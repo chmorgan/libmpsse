@@ -214,6 +214,7 @@ swig_string_data Read(struct mpsse_context *mpsse, int size);
 swig_string_data Transfer(struct mpsse_context *mpsse, char *data, int size);
 #else
 char *Read(struct mpsse_context *mpsse, int size);
+int  ReadAndReturnStatus(struct mpsse_context *mpsse, char *data, int size);
 char *Transfer(struct mpsse_context *mpsse, char *data, int size);
 
 int FastWrite(struct mpsse_context *mpsse, char *data, int size);
