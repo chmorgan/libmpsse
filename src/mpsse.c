@@ -929,6 +929,53 @@ char *InternalRead(struct mpsse_context *mpsse, int size)
 	return (char *) buf;
 }
 
+/* Performs a read. For internal use only; see Read() and ReadBits(). */
+int InternalReadAndReturnStatus(struct mpsse_context *mpsse, char *buf, int size)
+{
+	unsigned char *data = NULL;
+	unsigned char sbuf[SPI_RW_SIZE] = { 0 };
+	int n = 0, rxsize = 0, data_size = 0, retval = 0;
+
+	if(is_valid_context(mpsse))
+	{
+		if(mpsse->mode)
+		{
+				memset(buf, 0, size);
+
+				while(n < size)
+				{
+					rxsize = size - n;
+					if(rxsize > mpsse->xsize)
+					{
+						rxsize = mpsse->xsize;
+					}
+
+					data = build_block_buffer(mpsse, mpsse->rx, sbuf, rxsize, &data_size);
+					if(data)
+					{
+						retval = raw_write(mpsse, data, data_size);
+						free(data);
+
+						if(retval == MPSSE_OK)
+						{
+							n += raw_read(mpsse, buf+n, rxsize);
+						}
+						else
+						{
+						  return MPSSE_FAIL;
+						}
+					}
+					else
+					{
+					    return MPSSE_FAIL;
+					}
+				}
+		}
+	}
+
+	return MPSSE_OK;
+}
+
 /*
  * Reads data over the selected serial protocol.
  * 
@@ -956,6 +1003,24 @@ char *Read(struct mpsse_context *mpsse, int size)
 #else
 	return buf;
 #endif
+}
+
+/*
+ * Reads data over the selected serial protocol.
+ *
+ * @mpsse - MPSSE context pointer.
+ * @data  - Pointer to buffer to store the data
+ * @size  - Number of bytes to read.
+ *
+ * Writes the data into the provided buffer
+ * Returns MPSSE status
+ */
+int  ReadAndReturnStatus(struct mpsse_context *mpsse, char *data, int size)
+{
+
+	int retval = InternalReadAndReturnStatus(mpsse, data, size);
+
+	return retval;
 }
 
 /* 
