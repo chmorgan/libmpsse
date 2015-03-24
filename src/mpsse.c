@@ -882,7 +882,7 @@ int Write(struct mpsse_context *mpsse, char *data, int size)
 char *InternalRead(struct mpsse_context *mpsse, int size)
 {
 	unsigned char *data = NULL, *buf = NULL;
-	unsigned char sbuf[SPI_RW_SIZE] = { 0 };
+	unsigned char sbuf[SPI_RW_SIZE];
 	int n = 0, rxsize = 0, data_size = 0, retval = 0;
 
 	if(is_valid_context(mpsse))
@@ -892,8 +892,6 @@ char *InternalRead(struct mpsse_context *mpsse, int size)
 			buf = malloc(size);
 			if(buf)
 			{
-				memset(buf, 0, size);
-	
 				while(n < size)
 				{
 					rxsize = size - n;
@@ -933,15 +931,13 @@ char *InternalRead(struct mpsse_context *mpsse, int size)
 int InternalReadAndReturnStatus(struct mpsse_context *mpsse, char *buf, int size)
 {
 	unsigned char *data = NULL;
-	unsigned char sbuf[SPI_RW_SIZE] = { 0 };
+	unsigned char sbuf[SPI_RW_SIZE];
 	int n = 0, rxsize = 0, data_size = 0, retval = 0;
 
 	if(is_valid_context(mpsse))
 	{
 		if(mpsse->mode)
 		{
-				memset(buf, 0, size);
-
 				while(n < size)
 				{
 					rxsize = size - n;
@@ -1100,8 +1096,6 @@ char *Transfer(struct mpsse_context *mpsse, char *data, int size)
 			buf = malloc(size);
 			if(buf)
 			{
-				memset(buf, 0, size);
-
 				while(n < size)
 				{
 					/* When sending and recieving, FTDI chips don't seem to like large data blocks. Limit the size of each block to SPI_TRANSFER_SIZE */
